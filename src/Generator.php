@@ -10,37 +10,30 @@ namespace Vaened\SequenceGenerator;
 use Vaened\SequenceGenerator\Contracts\SequenceRepository;
 use Vaened\SequenceGenerator\Contracts\SequenceValue;
 use Vaened\SequenceGenerator\Stylists\Stylizer;
-use function Lambdish\Phunctional\flatten;
+use function Lambdish\Phunctional\flat_map;
 use function Lambdish\Phunctional\map;
 
 /**
  * Class Generator
  *
+ * Generates the sequences and stores them in the database using the repository of each collection.
+ *
  * @package Vaened\SequenceGenerator
  * @author enea dhack <enea.so@live.com>
- *
- *
  */
 class Generator
 {
-    public function __construct(
-        private readonly Normalizer $normalizer,
-    ) {
-    }
-
-    public function generate(string $source, array $seriesCollection): array
+    public function generate(string $source, array $seriesCollections): array
     {
-        $collections = $this->normalizer->normalize($seriesCollection);
-        $values = map($this->updateSequencesFor($source), $collections);
-
-        return flatten($values);
+        return flat_map($this->updateSequencesFor($source), $seriesCollections);
     }
 
     private function updateSequencesFor(string $source): callable
     {
-        return function (Collection $collection) use ($source) {
-            return map($this->incrementTo($source, $collection->getRepository()), $collection->getSeries());
-        };
+        return fn(Collection $collection) => map(
+            $this->incrementTo($source, $collection->getRepository()),
+            $collection->getSeries()
+        );
     }
 
     private function incrementTo(string $source, SequenceRepository $repository): callable
