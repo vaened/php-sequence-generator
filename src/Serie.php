@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Vaened\SequenceGenerator;
 
+use function implode;
+
 class Serie
 {
     private string $name;
@@ -25,9 +27,9 @@ class Serie
         return new static($column);
     }
 
-    public function alias(?string $alias): static
+    public function alias(string ...$aliases): static
     {
-        $this->alias = $alias;
+        $this->alias = implode($this->getAliasesSplitterCharacter(), $aliases);
         return $this;
     }
 
@@ -57,7 +59,12 @@ class Serie
         return $this->stylists;
     }
 
-    final public function getSerieID(): string
+    protected function getAliasesSplitterCharacter(): string
+    {
+        return '-';
+    }
+
+    final public function getQualifiedName(): string
     {
         if (! $this->hasAlias()) {
             return $this->getSerieName();
