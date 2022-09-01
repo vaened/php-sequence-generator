@@ -22,7 +22,6 @@
   },
   "license": "MIT",
   "type": "library",
-  "minimum-stability": "stable",
   "require-dev": {
     "phpunit/phpunit": "^9.3.7",
     "symfony/var-dumper": "^6.0"
