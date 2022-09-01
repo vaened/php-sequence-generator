@@ -13,7 +13,7 @@ use function array_diff_assoc;
 use function array_unique;
 use function array_unshift;
 use function Lambdish\Phunctional\filter;
-use function Lambdish\Phunctional\flatten;
+use function Lambdish\Phunctional\flat_map;
 use function Lambdish\Phunctional\map;
 use function Lambdish\Phunctional\some;
 
@@ -25,28 +25,28 @@ use function Lambdish\Phunctional\some;
  * @package Vaened\SequenceGenerator
  * @author enea dhack <enea.so@live.com>
  */
-class Normalizer
+final class Normalizer
 {
-    private SequenceRepository $repository;
+    private readonly SequenceRepository $repository;
 
     public function __construct(SequenceRepository $defaultRepository)
     {
         $this->repository = $defaultRepository;
     }
 
-    public function normalize(array $seriesCollection): array
+    public function normalize(array $presumedSeriesCollections): array
     {
-        $collections = $this->collectOrphanSeries($seriesCollection);
+        $collections = $this->collectOrphanSeries($presumedSeriesCollections);
 
         $this->validateDuplicates($collections);
 
         return $collections;
     }
 
-    private function collectOrphanSeries(array $seriesCollection): array
+    private function collectOrphanSeries(array $seriesCollections): array
     {
-        $series = filter(static fn(Collection|Serie $instance) => $instance instanceof Serie, $seriesCollection);
-        $collections = filter(static fn(Collection|Serie $instance) => $instance instanceof Collection, $seriesCollection);
+        $series = filter(static fn(Collection|Serie $instance) => $instance instanceof Serie, $seriesCollections);
+        $collections = filter(static fn(Collection|Serie $instance) => $instance instanceof Collection, $seriesCollections);
 
         array_unshift($collections, $this->collect($series));
 
@@ -55,26 +55,25 @@ class Normalizer
 
     private function validateDuplicates(array $collections): void
     {
-        $duplicates = $this->getDuplicateIdentifiers($collections);
-        some(static fn(string $identifier) => throw new SequenceError("the identifier '$identifier' is already registered"), $duplicates);
+        $duplicates = $this->getDuplicateNames($collections);
+        some(static fn(string $name) => throw new SequenceError("the name '$name' is already registeredregistered"), $duplicates);
     }
 
-    private function getDuplicateIdentifiers(array $collections): array
+    private function getDuplicateNames(array $collections): array
     {
-        $serialIdentifiers = map($this->toSeries(), $collections);
-        $flattenIdentifiers = flatten($serialIdentifiers);
+        $serialIdentifiers = flat_map($this->toSeries(), $collections);
 
-        return array_diff_assoc($flattenIdentifiers, array_unique($flattenIdentifiers));
+        return array_diff_assoc($serialIdentifiers, array_unique($serialIdentifiers));
     }
 
     private function toSeries(): callable
     {
-        return fn(Collection $collection) => map($this->toSerialID(), $collection->getSeries());
+        return fn(Collection $collection) => map($this->toSerieName(), $collection->getSeries());
     }
 
-    private function toSerialID(): callable
+    private function toSerieName(): callable
     {
-        return static fn(Serie $serial) => $serial->getSerieID();
+        return static fn(Serie $serial) => $serial->getSerieName();
     }
 
     private function collect(array $series): Collection
