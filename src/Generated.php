@@ -9,18 +9,18 @@ namespace Vaened\SequenceGenerator;
 
 class Generated
 {
-    private readonly string $simpleName;
+    private readonly string $serieName;
 
     private readonly string $qualifiedName;
 
     public function __construct(
         private readonly string $source,
         private readonly string $stylizedSequence,
-        private readonly int $cleanSequence,
+        private readonly int    $cleanSequence,
         Serie                   $serie
     ) {
-        $this->simpleName = $serie->getSerieName();
-        $this->qualifiedName = $serie->getSerieID();
+        $this->serieName     = $serie->getSerieName();
+        $this->qualifiedName = $serie->getQualifiedName();
     }
 
     public function getSource(): string
@@ -28,9 +28,9 @@ class Generated
         return $this->source;
     }
 
-    public function getSimpleName(): string
+    public function getSerieName(): string
     {
-        return $this->simpleName;
+        return $this->serieName;
     }
 
     public function getQualifiedName(): string
