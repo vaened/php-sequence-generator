@@ -18,6 +18,11 @@ class FixedLength implements Stylist
     ) {
     }
 
+    public static function of(int $length, int $padType = STR_PAD_LEFT): static
+    {
+        return new static($length, $padType);
+    }
+
     public function stylize(string $generated): string
     {
         $this->validateLength($generated);

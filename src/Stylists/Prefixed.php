@@ -20,6 +20,11 @@ class Prefixed implements Stylist
     ) {
     }
 
+    public static function of(string $prefix, bool $additional = false): static
+    {
+        return new static($prefix, $additional);
+    }
+
     public function stylize(string $generated): string
     {
         if ($this->additional || !preg_match('/^0+/', $generated)) {
