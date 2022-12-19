@@ -13,7 +13,7 @@ class Serie
 {
     private string $name;
 
-    private ?string $alias = null;
+    private ?string $scope = null;
 
     private array $stylists = [];
 
@@ -27,9 +27,9 @@ class Serie
         return new static($column);
     }
 
-    public function alias(string ...$aliases): static
+    public function scope(string ...$scopes): static
     {
-        $this->alias = implode($this->getAliasesSplitterCharacter(), $aliases);
+        $this->scope = implode($this->getScopesSplitterCharacter(), $scopes);
         return $this;
     }
 
@@ -39,9 +39,9 @@ class Serie
         return $this;
     }
 
-    public function hasAlias(): bool
+    public function hasScope(): bool
     {
-        return $this->alias !== null;
+        return $this->scope !== null;
     }
 
     public function getSerieName(): string
@@ -49,9 +49,9 @@ class Serie
         return $this->name;
     }
 
-    public function getSerieAlias(): ?string
+    public function getSerieScope(): ?string
     {
-        return $this->alias;
+        return $this->scope;
     }
 
     public function getStylists(): array
@@ -59,17 +59,17 @@ class Serie
         return $this->stylists;
     }
 
-    protected function getAliasesSplitterCharacter(): string
+    protected function getScopesSplitterCharacter(): string
     {
         return '-';
     }
 
     final public function getQualifiedName(): string
     {
-        if (! $this->hasAlias()) {
+        if (! $this->hasScope()) {
             return $this->getSerieName();
         }
 
-        return "{$this->getSerieName()}.{$this->getSerieAlias()}";
+        return "{$this->getSerieName()}.{$this->getSerieScope()}";
     }
 }
