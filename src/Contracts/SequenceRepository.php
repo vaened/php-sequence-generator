@@ -17,7 +17,7 @@ interface SequenceRepository
      * @param string $source
      * @return SequenceValue[]
      */
-    public function getAllFrom(string $source): array;
+    public function getAllFrom(string $source): iterable;
 
     /**
      * Get the current sequence stored in the configured sequence table.
